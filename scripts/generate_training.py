@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 
-Generate training data.
+Generate training data from ERA5.
 
 """
 
@@ -13,8 +13,16 @@ import geopandas as gpd
 import xarray as xr
 from shapely.geometry import Point
 
+###############################################################################
+# Define constants
+###############################################################################
+
 # Define coordinate system
 df_crs = 'EPSG:4326'
+
+###############################################################################
+# Read data
+###############################################################################
 
 # Define filepath
 filepath = '/home/johnny/Documents/Teaching/490_Geospatial_Data_Science_Applications/Applications/River_Discharge/data/'
@@ -26,6 +34,9 @@ basin = basin.set_crs(df_crs)
 # Import ERA5 data, 'ds' is dataset
 ds = xr.open_dataset(filepath + 'era/era5_reanalysis_2019.nc')
 
+###############################################################################
+# Clip ERA5 grid with shapefile
+###############################################################################
 # Get array of all lat lons
 xx, yy = np.meshgrid(ds['longitude'].values, ds['latitude'].values)
 
@@ -36,7 +47,7 @@ df = pd.DataFrame({'lon':np.ravel(xx), 'lat':np.ravel(yy)})
 geometry = [Point(xy) for xy in zip(df['lon'], df['lat'])]
 gdf = gpd.GeoDataFrame(df, crs=df_crs, geometry=geometry)
 
-# Spatial join of ERA5 grid points within Klamath Basin
+# Spatial join of ERA5 grid points within Klamath Basin shapefile
 merged = gpd.tools.sjoin(gdf, basin, op='within')
 
 # Define target latitude and longitude
@@ -46,6 +57,10 @@ target_lat = xr.DataArray(merged['lat'].values, dims="points")
 
 # Mask ERA5 grid
 ds_masked = ds.sel(longitude=target_lon, latitude=target_lat, method="nearest")
+
+###############################################################################
+# Spatial average and resample to daily
+###############################################################################
 
 # Get spatial averages
 ds_mean = np.mean(ds_masked, axis=(1))
@@ -58,10 +73,37 @@ final_df.set_index('datetime', inplace=True)
 # Resample to daily
 final_df_daily = final_df.resample('D').mean()
 
-# Compute an extra value: snow depth change
+###############################################################################
+# Basic feature engineering
+###############################################################################
+
+# Compute Snow depth change
 final_df_daily['sd_diff'] = final_df_daily['sd'].diff()
 
+# Convert snow accumulation (i.e. snow depth change > 0) to zeros since we only want a proxy for melt
+final_df_daily['sd_diff'][final_df_daily['sd_diff'] > 0] = 0
+
+# Compute time-lagged precipitation
+for i in np.arange(1, 8, 1):
+    final_df_daily['mtpr_'+ str(i) + 'days'] = final_df_daily['mtpr'].shift(periods=i)
+    
+# Compute time-lagged snow melt
+for i in np.arange(1, 8, 1):
+    final_df_daily['msmr_'+ str(i) + 'days'] = final_df_daily['msmr'].shift(periods=i)
+
+###############################################################################
+# More advanced feature engineering
+###############################################################################
+
+# Compute time-lagged precipitation with aggregation
+final_df_daily['mtpr'].shift(periods=3).rolling(3).sum() / 3
+
+# Spatial weighting?
+
+###############################################################################
 # Save to csv
+###############################################################################
+
 final_df_daily.to_csv(filepath + 'era/era5_training_data.csv')
 
 

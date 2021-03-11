@@ -13,6 +13,10 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
+###############################################################################
+# Import data
+###############################################################################
+
 # Define filepath
 filepath = '/home/johnny/Documents/Teaching/490_Geospatial_Data_Science_Applications/Applications/River_Discharge/data/'
 
@@ -20,12 +24,25 @@ filepath = '/home/johnny/Documents/Teaching/490_Geospatial_Data_Science_Applicat
 training_data = pd.read_csv(filepath + 'era/era5_training_data.csv')
 label_data = pd.read_csv(filepath + 'discharge/Klamath_Discharge_Daily_2019.csv')
 
-# Define feature list
-feature_list = ['t2m', 'mer', 'mtpr', 'swvl1', 'msmr', 'sd']
+###############################################################################
+# Format
+###############################################################################
 
-# Define labels and targets
+# Define feature list
+feature_list = ['t2m', 'mer', 'mtpr', 'swvl1', 'msmr', 'sd', 'sd_diff', 'mtpr_1days',
+                'mtpr_2days', 'mtpr_3days', 'mtpr_4days', 'mtpr_5days', 'mtpr_6days', 
+                'mtpr_7days', 'msmr_1days', 'msmr_2days', 'msmr_3days', 'msmr_4days', 
+                'msmr_5days', 'msmr_6days', 'msmr_7days']
+
+# Define labels and targets (note that we can't use all data because of some NaNs at the start)
+label_data = label_data[8:]
+training_data = training_data[8:]
 y = label_data['discharge']
 X = training_data[feature_list]
+
+###############################################################################
+# Perform machine learning
+###############################################################################
 
 # Split training and testing data
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -38,6 +55,10 @@ classifier.fit(X_train, y_train)
 
 # Predict
 predictions = classifier.predict(X_test)
+
+###############################################################################
+# Evaluate model
+###############################################################################
 
 # Calculate the absolute errors
 errors = abs(predictions - y_test)
@@ -52,6 +73,10 @@ mape = 100 * (errors / y_test)
 accuracy = 100 - np.mean(mape)
 print('Accuracy:', round(accuracy, 2), '%.')
 
+###############################################################################
+# Investigate feature importance
+###############################################################################
+
 # Get numerical feature importances
 importances = list(classifier.feature_importances_)
 
@@ -65,11 +90,8 @@ feature_importances = sorted(feature_importances, key = lambda x: x[1], reverse 
 # Print out the feature and importances 
 [print('Variable: {:20} Importance: {}'.format(*pair)) for pair in feature_importances]
 
-df_preds = pd.DataFrame(list(zip(y_test, predictions)), 
-                        columns=['y_test', 'predictions'])
-
 ###############################################################################
-# Apply model to entire discharge record
+# Apply model to entire discharge record and vizualize predictions
 ###############################################################################
 
 # Make predictions
@@ -84,7 +106,7 @@ plt.plot(label_data['predictions'])
 
 
 plt.scatter(label_data['discharge'], label_data['predictions'])
-plt.plot([0,120000],[0,120000])
+plt.plot([0,120000],[0,120000], color='k')
 
 
 
