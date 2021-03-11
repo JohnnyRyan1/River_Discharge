@@ -14,7 +14,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Define filename
-filename = '/home/johnny/Documents/Teaching/490_Geospatial_Data_Science_Applications/Applications/River_Discharge/data/Klamath_Discharge_2018_2020.txt'
+filepath = '/home/johnny/Documents/Teaching/490_Geospatial_Data_Science_Applications/Applications/River_Discharge/data/discharge/'
+filename = filepath + 'Klamath_Discharge_2018_2020.txt'
 
 # Read data, 'df' stands for DataFrame
 df = pd.read_csv(filename, skiprows=28, sep='\t', parse_dates=[2])
@@ -24,9 +25,6 @@ df.columns = ['agency', 'site_no', 'datetime', 'time_zone', 'discharge', 'status
 
 # Set datetime as index
 df.set_index('datetime', inplace=True)
-
-# Save as csv
-df.to_csv('/home/johnny/Documents/Teaching/490_Geospatial_Data_Science_Applications/Applications/River_Discharge/data/Klamath_Discharge_2018_2020.csv')
 
 # Plot discharge
 plt.plot(df['discharge'])
@@ -42,6 +40,10 @@ df_monthly = df['discharge'].resample('M').mean()
 plt.plot(df['discharge'])
 plt.plot(df_daily)
 plt.plot(df_monthly)
+
+# Save as csv
+df_daily.to_csv(filepath + 'Klamath_Discharge_Daily_2018_2020.csv')
+df_daily['2019-01-01':'2019-12-31'].to_csv(filepath + 'Klamath_Discharge_Daily_2019.csv')
 
 
 
