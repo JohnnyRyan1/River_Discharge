@@ -43,9 +43,9 @@ plt.plot(df_monthly)
 
 # Save as csv
 #df_daily.to_csv(filepath + 'Klamath_Discharge_Daily_2018_2020.csv')
-df_daily['2018-01-01':'2018-12-31'].to_csv(filepath + 'Klamath_Discharge_Daily_2018.csv')
-df_daily['2019-01-01':'2019-12-31'].to_csv(filepath + 'Klamath_Discharge_Daily_2019.csv')
-df_daily['2020-01-01':'2020-12-31'].to_csv(filepath + 'Klamath_Discharge_Daily_2020.csv')
+df_daily['2018-10-01':'2019-09-30'].to_csv(filepath + 'Klamath_Discharge_Daily_2018.csv')
+df_daily['2019-10-01':'2020-09-30'].to_csv(filepath + 'Klamath_Discharge_Daily_2019.csv')
+#df_daily['2020-01-01':'2020-12-31'].to_csv(filepath + 'Klamath_Discharge_Daily_2020.csv')
 
 
 

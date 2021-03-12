@@ -13,6 +13,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler  
 import matplotlib.pyplot as plt
+import pickle
 
 ###############################################################################
 # Import data
@@ -116,6 +117,10 @@ plt.plot([0,120000],[0,120000], color='k')
 # Calculate Nash-Sutcliffe Efficiency 
 nse = 1 - (np.sum((label_data['discharge'] - label_data['predictions'])**2) / 
            np.sum((label_data['discharge'] - np.mean(label_data['discharge']))**2))
+
+# Save model
+filename = '/home/johnny/Documents/Teaching/490_Geospatial_Data_Science_Applications/Applications/River_Discharge/models/klamath_rf.sav'
+pickle.dump(classifier, open(filename, 'wb'))
 
 
 ###############################################################################

@@ -20,6 +20,8 @@ from shapely.geometry import Point
 # Define coordinate system
 df_crs = 'EPSG:4326'
 
+year = '2020'
+
 ###############################################################################
 # Read data
 ###############################################################################
@@ -32,7 +34,7 @@ basin = gpd.read_file(filepath + 'basin/klamath_basin_lev05.shp')
 basin = basin.set_crs(df_crs)
 
 # Import ERA5 data, 'ds' is dataset
-ds = xr.open_dataset(filepath + 'era/era5_reanalysis_2019.nc')
+ds = xr.open_dataset(filepath + 'era/era5_reanalysis_' + year + '.nc')
 
 ###############################################################################
 # Clip ERA5 grid with shapefile
@@ -104,7 +106,7 @@ final_df_daily['mtpr'].shift(periods=3).rolling(3).sum() / 3
 # Save to csv
 ###############################################################################
 
-final_df_daily.to_csv(filepath + 'era/era5_training_data.csv')
+final_df_daily.to_csv(filepath + 'era/era5_training_data_' + year + '.csv')
 
 
 
