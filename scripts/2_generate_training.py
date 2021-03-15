@@ -20,14 +20,14 @@ from shapely.geometry import Point
 # Define coordinate system
 df_crs = 'EPSG:4326'
 
-year = '2020'
+year = '2019'
 
 ###############################################################################
 # Read data
 ###############################################################################
 
 # Define filepath
-filepath = '/home/johnny/Documents/Teaching/490_Geospatial_Data_Science_Applications/Applications/River_Discharge/data/'
+filepath = '/home/johnny/Documents/Teaching/490_Geospatial_Data_Science_Applications/Applications/River_Discharge_Prediction/data/'
 
 # Import Klamath Basin shapefile
 basin = gpd.read_file(filepath + 'basin/klamath_basin_lev05.shp')
@@ -92,6 +92,9 @@ for i in np.arange(1, 8, 1):
 # Compute time-lagged snow melt
 for i in np.arange(1, 8, 1):
     final_df_daily['msmr_'+ str(i) + 'days'] = final_df_daily['msmr'].shift(periods=i)
+    
+# Compute snow-on or snow-off boolean
+final_df_daily['msmr_'+ str(i) + 'days'] = final_df_daily['msmr'].shift(periods=i)
 
 ###############################################################################
 # More advanced feature engineering

@@ -20,10 +20,10 @@ import pickle
 ###############################################################################
 
 # Define filepath
-filepath = '/home/johnny/Documents/Teaching/490_Geospatial_Data_Science_Applications/Applications/River_Discharge/data/'
+filepath = '/home/johnny/Documents/Teaching/490_Geospatial_Data_Science_Applications/Applications/River_Discharge_Prediction/data/'
 
 # Import data
-training_data = pd.read_csv(filepath + 'era/era5_training_data.csv')
+training_data = pd.read_csv(filepath + 'era/era5_training_data_2019.csv')
 label_data = pd.read_csv(filepath + 'discharge/Klamath_Discharge_Daily_2019.csv')
 
 ###############################################################################
@@ -119,7 +119,7 @@ nse = 1 - (np.sum((label_data['discharge'] - label_data['predictions'])**2) /
            np.sum((label_data['discharge'] - np.mean(label_data['discharge']))**2))
 
 # Save model
-filename = '/home/johnny/Documents/Teaching/490_Geospatial_Data_Science_Applications/Applications/River_Discharge/models/klamath_rf.sav'
+filename = '/home/johnny/Documents/Teaching/490_Geospatial_Data_Science_Applications/Applications/River_Discharge_Prediction/models/klamath_rf.sav'
 pickle.dump(classifier, open(filename, 'wb'))
 
 
