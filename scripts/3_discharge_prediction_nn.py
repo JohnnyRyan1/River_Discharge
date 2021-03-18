@@ -20,10 +20,10 @@ import pickle
 ###############################################################################
 
 # Define filepath
-filepath = '/home/johnny/Documents/Teaching/490_Geospatial_Data_Science_Applications/Applications/River_Discharge/data/'
+filepath = '/home/johnny/Documents/Teaching/490_Geospatial_Data_Science_Applications/Applications/River_Discharge_Prediction/data/'
 
 # Import data
-training_data = pd.read_csv(filepath + 'era/era5_training_data.csv')
+training_data = pd.read_csv(filepath + 'era/era5_training_data_2019.csv')
 label_data = pd.read_csv(filepath + 'discharge/Klamath_Discharge_Daily_2019.csv')
 
 ###############################################################################
@@ -54,7 +54,7 @@ X_scaled = scaler.fit(X).transform(X)
 X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
 
 # Define classifier
-classifier = MLPRegressor(solver='adam', alpha=0.05, hidden_layer_sizes=(100,), 
+classifier = MLPRegressor(solver='adam', alpha=0.01, hidden_layer_sizes=(100,), 
                           random_state=1, max_iter=100000)
 
 # Train classifier
@@ -93,7 +93,6 @@ label_data['predictions'] = predictions
 # Plot
 plt.plot(label_data['discharge'])
 plt.plot(label_data['predictions'])
-
 # Calculate Nash-Sutcliffe Efficiency 
 nse = 1 - (np.sum((label_data['discharge'] - label_data['predictions'])**2) / 
            np.sum((label_data['discharge'] - np.mean(label_data['discharge']))**2))
